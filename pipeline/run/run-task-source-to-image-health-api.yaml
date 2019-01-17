@@ -1,0 +1,22 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: source-to-image-health-api
+spec:
+  taskRef:
+    name: source-to-image
+  trigger:
+    type: manual
+  inputs:
+    resources:
+      - name: workspace
+        resourceRef:
+          name: health-helm-git
+    params:
+      - name: pathToContext
+        value: images/api
+  outputs:
+    resources:
+      - name: builtImage
+        resourceRef:
+          name: health-api-image
