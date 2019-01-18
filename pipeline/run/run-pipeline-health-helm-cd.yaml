@@ -1,0 +1,38 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: health-helm-cd-pipeline-run-1
+spec:
+  pipelineRef:
+    name: health-helm-cd-pipeline
+  trigger:
+    type: manual
+  serviceAccount: 'default'
+  resources:
+  - name: source-to-image-health-api
+    inputs:
+    - name: workspace
+      resourceRef:
+        name: health-helm-git
+    outputs:
+    - name: builtImage
+      resourceRef:
+        name: health-api-image
+  - name: source-to-image-health-frontend
+    inputs:
+    - name: workspace
+      resourceRef:
+        name: health-helm-git
+    outputs:
+    - name: builtImage
+      resourceRef:
+        name: health-api-frontend
+  - name: source-to-image-health-database
+    inputs:
+    - name: workspace
+      resourceRef:
+        name: health-helm-git
+    outputs:
+    - name: builtImage
+      resourceRef:
+        name: health-api-database

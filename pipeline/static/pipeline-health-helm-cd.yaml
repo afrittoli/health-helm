@@ -1,0 +1,24 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: health-helm-cd-pipeline
+spec:
+  tasks:
+  - name: source-to-image-health-api
+    taskRef:
+      name: source-to-image
+    params:
+      - name: pathToContext
+        value: images/api
+  - name: source-to-image-health-frontend
+    taskRef:
+      name: source-to-image
+    params:
+      - name: pathToContext
+        value: images/frontend
+  - name: source-to-image-health-database
+    taskRef:
+      name: source-to-image
+    params:
+      - name: pathToContext
+        value: images/database
