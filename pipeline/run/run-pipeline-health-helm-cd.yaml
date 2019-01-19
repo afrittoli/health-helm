@@ -26,7 +26,7 @@ spec:
     outputs:
     - name: builtImage
       resourceRef:
-        name: health-api-frontend
+        name: health-frontend-image
   - name: source-to-image-health-database
     inputs:
     - name: workspace
@@ -35,4 +35,4 @@ spec:
     outputs:
     - name: builtImage
       resourceRef:
-        name: health-api-database
+        name: health-database-image
