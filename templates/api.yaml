@@ -1,7 +1,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  namespace: default
+  namespace: {{ .Release.Namespace }}
   name: {{ template "health.fullname" . }}-services-reader
 rules:
 - apiGroups: [""] # "" indicates the core API group
@@ -15,7 +15,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ template "health.fullname" . }}-read-services
-  namespace: default
+  namespace: {{ .Release.Namespace }}
 subjects:
 - kind: Group
   name: system:serviceaccounts

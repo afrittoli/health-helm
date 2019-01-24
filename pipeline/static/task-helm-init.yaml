@@ -1,0 +1,22 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: helm-init
+spec:
+  serviceAccount: health-admin
+  inputs:
+    resources:
+      - name: target-cluster
+        type: cluster
+  steps:
+    - name: helm-init
+      image: alpine/helm
+      args:
+        - init
+        - --service-account=health-admin
+        - --wait
+      env:
+        - name: "KUBECONFIG"
+          value: "/workspace/af-pipelines/kubeconfig"
+        - name: "TILLER_NAMESPACE"
+          value: "health"

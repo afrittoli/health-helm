@@ -1,0 +1,18 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: af-pipelines
+spec:
+  type: cluster
+  params:
+    - name: url
+      value: https://c9.sjc03.containers.cloud.ibm.com:24174
+    - name: username
+      value: health-admin
+  secrets:
+    - fieldName: token
+      secretKey: tokenKey
+      secretName: target-cluster-secrets
+    - fieldName: cadata
+      secretKey: cadataKey
+      secretName: target-cluster-secrets

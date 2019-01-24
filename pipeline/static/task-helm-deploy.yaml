@@ -1,0 +1,51 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: helm-deploy
+spec:
+  serviceAccount: health-helm
+  inputs:
+    resources:
+      - name: chart
+        type: git
+      - name: api-image
+        type: image
+      - name: frontend-image
+        type: image
+      - name: database-image
+        type: image
+      - name: target-cluster
+        type: cluster
+    params:
+      - name: pathToHelmCharts
+        description: Path to the helm charts
+      - name: clusterIngressHost
+        description: Fully qualified hostname of the cluster ingress
+  steps:
+    - name: helm-deploy
+      image: alpine/helm
+      args:
+        - upgrade
+        - --debug
+        - --install
+        - --namespace=health
+        - health # Helm release name
+        - ${inputs.params.pathToHelmCharts}
+        # Latest version instead of ${inputs.resources.api-image.version} until #216
+        - --set
+        - overrideApiImage=${inputs.resources.api-image.url}:latest
+        - --set
+        - overrideFrontendImage=${inputs.resources.frontend-image.url}:latest
+        - --set
+        - overrideDatabaseImage=${inputs.resources.database-image.url}:latest
+        - --set
+        - ingress.enabled=true
+        - --set
+        - ingress.host=${inputs.params.clusterIngressHost}
+        - --set
+        - image.pullPolicy=Always
+      env:
+        - name: "KUBECONFIG"
+          value: "/workspace/af-pipelines/kubeconfig"
+        - name: "TILLER_NAMESPACE"
+          value: "health"

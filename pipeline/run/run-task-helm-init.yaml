@@ -1,0 +1,14 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: helm-init-health
+spec:
+  taskRef:
+    name: helm-init
+  trigger:
+    type: manual
+  inputs:
+    resources:
+      - name: target-cluster
+        resourceRef:
+          name: af-pipelines

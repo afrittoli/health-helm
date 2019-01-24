@@ -1,0 +1,2 @@
+pipeline/secrets/cluster-secrets.yaml
+pipeline/secrets/cr-secret.yaml

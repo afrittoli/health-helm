@@ -22,3 +22,23 @@ spec:
     params:
       - name: pathToContext
         value: images/database
+  - name: helm-deploy-target-cluster
+    taskRef:
+      name: helm-deploy
+    params:
+      - name: pathToHelmCharts
+        value: .
+      - name: chartname
+        value: health
+      - name: clusterIngressHost
+        value: afhealth.sjc03.containers.appdomain.cloud
+    resources:
+      - name: api-image
+        providedBy:
+          - source-to-image-health-api
+      - name: frontend-image
+        providedBy:
+          - source-to-image-health-frontend
+      - name: database-image
+        providedBy:
+          - source-to-image-health-database
