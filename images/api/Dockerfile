@@ -27,7 +27,6 @@ COPY health-uwsgi-api.ini /etc/health-uwsgi-api.ini
 COPY openstack-health.conf /etc/openstack-health.conf
 
 RUN ln -s /etc/nginx/sites-available/health-api.conf /etc/nginx/sites-enabled/health-api.conf
-RUN mkdir -p /var/run/uwsgi/
 
 COPY run.sh /root/run.sh
 
