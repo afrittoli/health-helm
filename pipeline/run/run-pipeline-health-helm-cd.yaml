@@ -9,47 +9,18 @@ spec:
     type: manual
   serviceAccount: 'default'
   resources:
-  - name: source-to-image-health-api
-    inputs:
-    - name: workspace
+    - name: src
       resourceRef:
         name: health-helm-git
-    outputs:
-    - name: builtImage
+    - name: api-image
       resourceRef:
         name: health-api-image
-  - name: source-to-image-health-frontend
-    inputs:
-    - name: workspace
-      resourceRef:
-        name: health-helm-git
-    outputs:
-    - name: builtImage
+    - name: frontend-image
       resourceRef:
         name: health-frontend-image
-  - name: source-to-image-health-database
-    inputs:
-    - name: workspace
-      resourceRef:
-        name: health-helm-git
-    outputs:
-    - name: builtImage
+    - name: database-image
       resourceRef:
         name: health-database-image
-  - name: helm-deploy-target-cluster
-    inputs:
-      - name: chart
-        resourceRef:
-          name: health-helm-git
-      - name: api-image
-        resourceRef:
-          name: health-api-image
-      - name: frontend-image
-        resourceRef:
-          name: health-frontend-image
-      - name: database-image
-        resourceRef:
-          name: health-database-image
-      - name: target-cluster
-        resourceRef:
-          name: af-pipelines
+    - name: health-cluster
+      resourceRef:
+        name: af-pipelines

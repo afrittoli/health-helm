@@ -18,7 +18,8 @@ spec:
         type: cluster
     params:
       - name: pathToHelmCharts
-        description: Path to the helm charts
+        description: Path to the helm charts within the repo
+        default: .
       - name: clusterIngressHost
         description: Fully qualified hostname of the cluster ingress
   steps:
@@ -30,7 +31,7 @@ spec:
         - --install
         - --namespace=health
         - health # Helm release name
-        - ${inputs.params.pathToHelmCharts}
+        - /workspace/chart/${inputs.params.pathToHelmCharts}
         # Latest version instead of ${inputs.resources.api-image.version} until #216
         - --set
         - overrideApiImage=${inputs.resources.api-image.url}:latest

@@ -26,6 +26,6 @@ spec:
           name: af-pipelines
     params:
       - name: pathToHelmCharts
-        value: /workspace/chart
+        value: .
       - name: clusterIngressHost
         value: af-pipelines.sjc03.containers.appdomain.cloud

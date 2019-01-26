@@ -3,6 +3,17 @@ kind: Pipeline
 metadata:
   name: health-helm-cd-pipeline
 spec:
+  resources:
+    - name: src
+      type: git
+    - name: api-image
+      type: image
+    - name: frontend-image
+      type: image
+    - name: database-image
+      type: image
+    - name: health-cluster
+      type: cluster
   tasks:
   - name: source-to-image-health-api
     taskRef:
@@ -10,35 +21,69 @@ spec:
     params:
       - name: pathToContext
         value: images/api
+    resources:
+      inputs:
+        - name: workspace
+          resource: src
+      outputs:
+        - name: builtImage
+          resource: api-image
   - name: source-to-image-health-frontend
     taskRef:
       name: source-to-image
     params:
       - name: pathToContext
         value: images/frontend
+    resources:
+      inputs:
+        - name: workspace
+          resource: src
+      outputs:
+        - name: builtImage
+          resource: frontend-image
   - name: source-to-image-health-database
     taskRef:
       name: source-to-image
     params:
       - name: pathToContext
         value: images/database
+    resources:
+      inputs:
+        - name: workspace
+          resource: src
+      outputs:
+        - name: builtImage
+          resource: database-image
+  - name: helm-init-target-cluster
+    taskRef:
+      name: helm-init
+    resources:
+      inputs:
+        - name: target-cluster
+          resource: health-cluster
   - name: helm-deploy-target-cluster
     taskRef:
       name: helm-deploy
     params:
       - name: pathToHelmCharts
         value: .
-      - name: chartname
-        value: health
       - name: clusterIngressHost
-        value: afhealth.sjc03.containers.appdomain.cloud
+        value: af-pipelines.sjc03.containers.appdomain.cloud
     resources:
-      - name: api-image
-        providedBy:
-          - source-to-image-health-api
-      - name: frontend-image
-        providedBy:
-          - source-to-image-health-frontend
-      - name: database-image
-        providedBy:
-          - source-to-image-health-database
+      inputs:
+        - name: chart
+          resource: src
+        - name: api-image
+          resource: api-image
+          from:
+            - source-to-image-health-api
+        - name: frontend-image
+          resource: frontend-image
+          from:
+            - source-to-image-health-frontend
+        - name: database-image
+          resource: database-image
+          from:
+            - source-to-image-health-database
+        - name: target-cluster
+          resource: health-cluster
