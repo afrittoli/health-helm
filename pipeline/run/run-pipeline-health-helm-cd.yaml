@@ -1,7 +1,7 @@
 apiVersion: pipeline.knative.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: health-helm-cd-pipeline-run-2
+  generateName: health-helm-cd-pr-
 spec:
   pipelineRef:
     name: health-helm-cd-pipeline
