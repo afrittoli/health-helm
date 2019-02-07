@@ -1,0 +1,18 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: {{ .Values.targetCluster.name }}
+spec:
+  type: cluster
+  params:
+    - name: url
+      value: {{ .Values.targetCluster.masterURL }}
+    - name: username
+      value: {{ .Values.targetCluster.username }}
+  secrets:
+    - fieldName: token
+      secretKey: tokenKey
+      secretName: target-cluster-secrets
+    - fieldName: cadata
+      secretKey: cadataKey
+      secretName: target-cluster-secrets

@@ -1,0 +1,52 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: helm-deploy
+spec:
+  serviceAccount: {{ .Values.targetNamespace }}-helm
+  inputs:
+    resources:
+      - name: chart
+        type: git
+      - name: api-image
+        type: image
+      - name: frontend-image
+        type: image
+      - name: database-image
+        type: image
+      - name: target-cluster
+        type: cluster
+    params:
+      - name: pathToHelmCharts
+        description: Path to the helm charts within the repo
+        default: .
+      - name: clusterIngressHost
+        description: Fully qualified hostname of the cluster ingress
+  steps:
+    - name: helm-deploy
+      image: alpine/helm
+      args:
+        - upgrade
+        - --debug
+        - --install
+        - --namespace={{ .Values.targetNamespace }}
+        - health # Helm release name
+        - /workspace/chart/${inputs.params.pathToHelmCharts}
+        # Latest version instead of ${inputs.resources.api-image.version} until #216
+        - --set
+        - overrideApiImage=${inputs.resources.api-image.url}:{{ .Values.image.tag }}
+        - --set
+        - overrideFrontendImage=${inputs.resources.frontend-image.url}:{{ .Values.image.tag }}
+        - --set
+        - overrideDatabaseImage=${inputs.resources.database-image.url}:{{ .Values.image.tag }}
+        - --set
+        - ingress.enabled=true
+        - --set
+        - ingress.host=${inputs.params.clusterIngressHost}
+        - --set
+        - image.pullPolicy={{ .Values.image.pullPolicy }}
+      env:
+        - name: "KUBECONFIG"
+          value: "/workspace/{{ .Values.targetCluster.name }}/kubeconfig"
+        - name: "TILLER_NAMESPACE"
+          value: "{{ .Values.targetNamespace }}"

@@ -1,0 +1,10 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: health-api-image
+spec:
+  type: image
+  params:
+    - name: url
+      description: The target URL
+      value: {{ .Values.image.repository }}{{ if .Values.image.repository }}/{{ end }}health-api

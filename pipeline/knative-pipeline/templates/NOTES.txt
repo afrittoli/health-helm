@@ -1,0 +1,2 @@
+1. See the pipeline resources with
+  kubectl get all -n {{ .Release.Namespace }}

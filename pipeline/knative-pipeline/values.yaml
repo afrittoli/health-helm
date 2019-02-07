@@ -1,0 +1,39 @@
+# Default values for knative-pipeline.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Cluster properties are mandatory, but there is no good default, so leave
+# this empty by default.
+targetCluster: {}
+  # The name of the cluster the pipeline deploys to
+  # name: my-cluster
+  # masterURL: myclusterhost01.mycloudprovider.org
+  # username: admin
+  # The FQDN for the ingress in the target cluster
+  # ingressHost: my-cluster.my-domain.org
+
+targetClusterSecrets: {}
+  # Base64 encoded token
+  # token: dmVyeXNlY3JldHRva2Vu
+  # Base64 encoded CA certificate
+  # cadata: c2VjcmV0Y2FkYXRh
+
+# This is not the Release.Namespace, which is the namespace where the pipeline
+# is created. This represents the namespace in the namespace in the target
+# cluster where the pipeline deploys to.
+targetNamespace: health
+
+# This is where images are pushed to and pull from.
+image:
+  repository: ""
+  tag: latest
+  pullPolicy: always
+
+# properties of the pipeline
+pipeline:
+  serviceAccount: default
+
+# git repo for docker images and heath chart
+git:
+  url: https://github.com/afrittoli/health-helm
+  revision: master
