@@ -22,6 +22,6 @@ SERVICE_ACCOUNT_SECRET_NAME=$(kubectl get serviceaccount/health-admin -n health 
 CA_DATA=$(kubectl get secret/$SERVICE_ACCOUNT_SECRET_NAME -n health -o json | jq '.data["ca.crt"]' -r)
 TOKEN=$(kubectl get secret/$SERVICE_ACCOUNT_SECRET_NAME -n health -o json | jq '.data.token' -r)
 
-sed -e 's/__CLUSTER_NAME__'"$TARGET_CLUSTER_NAME"'/g' \
+sed -e 's/__CLUSTER_NAME__'/"$CLUSTER_NAME"'/g' \
     -e 's/__CA_DATA_KEY__/'"$CA_DATA"'/g' \
-    -e 's/__TOKEN_KEY__/'"$TOKEN"'/g' cluster-secrets.yaml.template > ${TARGET_CLUSTER_NAME}-secrets.yaml
+    -e 's/__TOKEN_KEY__/'"$TOKEN"'/g' cluster-secrets.yaml.template > ${CLUSTER_NAME}-secrets.yaml
