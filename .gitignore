@@ -1,4 +1,6 @@
 pipeline/accounts/cr-secret.yaml
 pipeline/accounts/*-secrets.yaml
 **/*-values.yaml
-pipeline/run/resource*.yaml
+pipeline/run/resource*
+pipeline/run/run-pipeline*
+!pipeline/run/run-pipeline-health-helm-cd-demo.yaml
