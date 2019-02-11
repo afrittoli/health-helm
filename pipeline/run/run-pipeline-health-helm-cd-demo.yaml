@@ -7,7 +7,7 @@ spec:
     name: health-helm-cd-pipeline
   params:
     - name: clusterIngressHost
-      value: af-pipelines.sjc03.containers.appdomain.cloud
+      value: mycluster.myzone.containers.appdomain.cloud
     - name: targetNamespace
       value: health
   trigger:
@@ -16,7 +16,7 @@ spec:
   resources:
     - name: src
       resourceRef:
-        name: health-helm-git-knative
+        name: health-helm-git-mygitreference
     - name: api-image
       resourceRef:
         name: health-api-image
@@ -28,4 +28,4 @@ spec:
         name: health-database-image
     - name: health-cluster
       resourceRef:
-        name: af-pipelines
+        name: mycluster

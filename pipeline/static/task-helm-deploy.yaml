@@ -50,6 +50,6 @@ spec:
         - image.pullPolicy=Always
       env:
         - name: "KUBECONFIG"
-          value: "/workspace/${input.resources.target-cluster.name}/kubeconfig"
+          value: "/workspace/${inputs.resources.target-cluster.name}/kubeconfig"
         - name: "TILLER_NAMESPACE"
           value: "${inputs.params.targetNamespace}"
