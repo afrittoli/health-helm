@@ -1,2 +1,4 @@
-pipeline/secrets/cluster-secrets.yaml
-pipeline/secrets/cr-secret.yaml
+pipeline/accounts/cluster-secrets.yaml
+pipeline/accounts/cr-secret.yaml
+**/*-values.yaml
+pipeline/run/resource*.yaml

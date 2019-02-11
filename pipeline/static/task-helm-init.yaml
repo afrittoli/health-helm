@@ -8,6 +8,10 @@ spec:
     resources:
       - name: target-cluster
         type: cluster
+    params:
+      - name: targetNamespace
+        description: Namespace in the target cluster we want to deploy to
+        default: "default"
   steps:
     - name: helm-init
       image: alpine/helm
@@ -17,6 +21,6 @@ spec:
         - --wait
       env:
         - name: "KUBECONFIG"
-          value: "/workspace/af-pipelines/kubeconfig"
+          value: "/workspace/${input.resources.target-cluster.name}/kubeconfig"
         - name: "TILLER_NAMESPACE"
-          value: "health"
+          value: "${inputs.params.targetNamespace}"

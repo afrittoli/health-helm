@@ -5,13 +5,18 @@ metadata:
 spec:
   pipelineRef:
     name: health-helm-cd-pipeline
+  params:
+    - name: clusterIngressHost
+      value: af-pipelines.sjc03.containers.appdomain.cloud
+    - name: targetNamespace
+      value: health
   trigger:
     type: manual
   serviceAccount: 'default'
   resources:
     - name: src
       resourceRef:
-        name: health-helm-git
+        name: health-helm-git-knative
     - name: api-image
       resourceRef:
         name: health-api-image

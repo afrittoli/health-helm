@@ -22,6 +22,9 @@ spec:
         default: .
       - name: clusterIngressHost
         description: Fully qualified hostname of the cluster ingress
+      - name: targetNamespace
+        description: Namespace in the target cluster we want to deploy to
+        default: "default"
   steps:
     - name: helm-deploy
       image: alpine/helm
@@ -29,7 +32,7 @@ spec:
         - upgrade
         - --debug
         - --install
-        - --namespace=health
+        - --namespace=${inputs.params.targetNamespace}
         - health # Helm release name
         - /workspace/chart/${inputs.params.pathToHelmCharts}
         # Latest version instead of ${inputs.resources.api-image.version} until #216
@@ -47,6 +50,6 @@ spec:
         - image.pullPolicy=Always
       env:
         - name: "KUBECONFIG"
-          value: "/workspace/af-pipelines/kubeconfig"
+          value: "/workspace/${input.resources.target-cluster.name}/kubeconfig"
         - name: "TILLER_NAMESPACE"
-          value: "health"
+          value: "${inputs.params.targetNamespace}"

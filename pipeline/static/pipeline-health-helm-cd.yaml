@@ -3,6 +3,12 @@ kind: Pipeline
 metadata:
   name: health-helm-cd-pipeline
 spec:
+  params:
+    - name: clusterIngressHost
+      description: FQDN of the ingress in the target cluster
+    - name: targetNamespace
+      description: Namespace in the target cluster we want to deploy to
+      default: default
   resources:
     - name: src
       type: git
@@ -57,6 +63,9 @@ spec:
   - name: helm-init-target-cluster
     taskRef:
       name: helm-init
+    params:
+      - name: targetNamespace
+        value: "${params.targetNamespace}"
     resources:
       inputs:
         - name: target-cluster
@@ -68,7 +77,9 @@ spec:
       - name: pathToHelmCharts
         value: .
       - name: clusterIngressHost
-        value: af-pipelines.sjc03.containers.appdomain.cloud
+        value: "${params.clusterIngressHost}"
+      - name: targetNamespace
+        value: "${params.targetNamespace}"
     resources:
       inputs:
         - name: chart
