@@ -1,7 +1,11 @@
 apiVersion: pipeline.knative.dev/v1alpha1
 kind: TaskRun
 metadata:
-  name: helm-deploy-health
+  generateName: helm-deploy-health-
+  labels:
+    app: health
+    git: 572ca508ece7a7533a93c02bf4777ac133cf6cb6
+    cluster: af-health
 spec:
   taskRef:
     name: helm-deploy
@@ -11,7 +15,7 @@ spec:
     resources:
       - name: chart
         resourceRef:
-          name: health-helm-git
+          name: health-helm-git-knative-serving
       - name: api-image
         resourceRef:
           name: health-api-image
@@ -23,9 +27,11 @@ spec:
           name: health-database-image
       - name: target-cluster
         resourceRef:
-          name: af-pipelines
+          name: af-health
     params:
       - name: pathToHelmCharts
         value: .
       - name: clusterIngressHost
-        value: af-pipelines.sjc03.containers.appdomain.cloud
+        value: af-health.sjc03.containers.appdomain.cloud
+      - name: targetNamespace
+        value: health

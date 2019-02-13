@@ -25,64 +25,7 @@ roleRef:
   name: {{ template "health.fullname" . }}-services-reader
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ template "health.fullname" . }}-api
-  labels:
-    app: {{ template "health.name" . }}-api
-    chart: {{ template "health.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ template "health.name" . }}-api
-      release: {{ .Release.Name }}
-  template:
-    metadata:
-      labels:
-        app: {{ template "health.name" . }}-api
-        release: {{ .Release.Name }}
-    spec:
-      containers:
-        - name: {{ template "health.fullname" . }}-api
-          image: {{ template "health.api.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: DB_HOST
-              value: {{ template "health.fullname" . }}-postgres
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
-                  key: password
-            - name: DB_NAME
-              value: subunit2sql
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /status
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /status
-              port: http
-            initialDelaySeconds: 60
-            periodSeconds: 20
----
-apiVersion: v1
+apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
   name: {{ template "health.fullname" . }}-api
@@ -92,12 +35,39 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 80
-    name: health
-    protocol: TCP
-  selector:
-    app: {{ template "health.name" . }}-api
-    release: {{ .Release.Name }}
+  runLatest:
+    configuration:
+      revisionTemplate:  # template for building Revision
+        spec:
+          container: # k8s core.v1.Container
+            image: {{ template "health.api.image" . }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            env:
+              - name: DB_HOST
+                value: {{ template "health.fullname" . }}-postgres
+              - name: DB_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "health.fullname" . }}-dbsecrets
+                    key: username
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "health.fullname" . }}-dbsecrets
+                    key: password
+              - name: DB_NAME
+                value: subunit2sql
+            ports:
+              - name: h2c
+                containerPort: 80
+                protocol: TCP
+            readinessProbe:
+              httpGet:
+                path: /status
+              initialDelaySeconds: 5
+              periodSeconds: 5
+            livenessProbe:
+              httpGet:
+                path: /status
+              initialDelaySeconds: 60
+              periodSeconds: 20
