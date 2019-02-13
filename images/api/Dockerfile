@@ -7,10 +7,10 @@ EXPOSE 80
 
 # Build dependencies
 RUN apt-get update && apt-get install -q -y \
-    build-essential musl-dev libxml2-dev
+    build-essential musl-dev libxml2-dev git
 
 # Required apt packages
-RUN apt-get install -q -y nginx supervisor memcached git
+RUN apt-get install -q -y nginx supervisor memcached
 # Required pip packages
 RUN pip3 install --no-cache-dir -U psycopg2 uwsgi
 
@@ -32,8 +32,8 @@ RUN pip3 install --no-cache-dir -r ./openstack-health/requirements.txt
 RUN pip3 install --no-cache-dir -U ./openstack-health
 
 # Cleanup
-RUN apt-get remove -q -y build-essential musl-dev libxml2-dev; \
-    apt-get clean
+RUN apt-get remove -q -y build-essential musl-dev libxml2-dev git; \
+    apt-get clean; apt-get purge -y --auto-remove
 
 # Deploy configuration from the context
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
