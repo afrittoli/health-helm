@@ -1,26 +1,41 @@
-FROM python:3.6
+FROM python:3.6-slim-stretch
 
-
-RUN apt-get update
-RUN apt-get install -y build-essential musl-dev postgresql libxml2-dev nginx supervisor memcached git
-
-RUN pip3 install -U psycopg2
-RUN git clone git://git.openstack.org/openstack/openstack-health
-RUN pip3 install -U uwsgi
-RUN pip3 install -U ./openstack-health
-
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-&& ln -sf /dev/stderr /var/log/nginx/error.log
-# Run nginx in the foreground
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-# Remove default configuration from Nginx
-RUN rm -f /etc/nginx/conf.d/default.conf
-
+# Container interface
+ENV HEALTH_GIT_REPO=git://git.openstack.org/openstack/openstack-health \
+    HEALTH_GIT_REF=master
 EXPOSE 80
 
-# Remove default page
-RUN rm -f /etc/nginx/sites-enabled/*
+# Build dependencies
+RUN apt-get update && apt-get install -q -y \
+    build-essential musl-dev libxml2-dev
 
+# Required apt packages
+RUN apt-get install -q -y nginx supervisor memcached git
+# Required pip packages
+RUN pip3 install --no-cache-dir -U psycopg2 uwsgi
+
+# Configuring nginx and uwsgi
+RUN rm -f /etc/nginx/sites-enabled/*; \
+    rm -f /etc/nginx/conf.d/default.conf; \
+    mkdir -p /etc/nginx/sites-enabled/*; \
+    mkdir -p /var/run/uwsgi/; \
+    ln -sf /dev/stdout /var/log/nginx/access.log; \
+    ln -sf /dev/stderr /var/log/nginx/error.log; \
+    echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Install openstack-health
+RUN git clone $HEALTH_GIT_REPO; \
+    cd openstack-health; git checkout $HEALTH_GIT_REF; cd ..;
+
+# Install requirements first to avoid reinstalling on code changes
+RUN pip3 install --no-cache-dir -r ./openstack-health/requirements.txt
+RUN pip3 install --no-cache-dir -U ./openstack-health
+
+# Cleanup
+RUN apt-get remove -q -y build-essential musl-dev libxml2-dev; \
+    apt-get clean
+
+# Deploy configuration from the context
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY health-api.conf /etc/nginx/sites-available/health-api.conf
 COPY health-uwsgi-api.ini /etc/health-uwsgi-api.ini

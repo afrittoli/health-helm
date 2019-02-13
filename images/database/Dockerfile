@@ -2,7 +2,7 @@ FROM postgres:alpine
 
 RUN apk add --update --virtual .build-deps \
       gcc musl-dev linux-headers libxml2-dev python3-dev \
-    && apk add --update py3-psycopg2 py3-pip
+    && apk add --update py3-psycopg2
 
 RUN wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
 	  python3 get-pip.py; \
