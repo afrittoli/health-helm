@@ -33,6 +33,9 @@ spec:
         - --debug
         - --install
         - --namespace=${inputs.params.targetNamespace}
+        # The image is always "latest" so we need to force / recreate-pods to ensure it's picked up
+        - --force
+        - --recreate-pods
         - health # Helm release name
         - /workspace/chart/${inputs.params.pathToHelmCharts}
         # Latest version instead of ${inputs.resources.api-image.version} until #216
