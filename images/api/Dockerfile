@@ -17,7 +17,7 @@ RUN pip3 install --no-cache-dir -U psycopg2 uwsgi
 # Configuring nginx and uwsgi
 RUN rm -f /etc/nginx/sites-enabled/*; \
     rm -f /etc/nginx/conf.d/default.conf; \
-    mkdir -p /etc/nginx/sites-enabled/*; \
+    mkdir -p /etc/nginx/sites-enabled/; \
     mkdir -p /var/run/uwsgi/; \
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     ln -sf /dev/stderr /var/log/nginx/error.log; \
