@@ -18,6 +18,7 @@ spec:
       args:
         - init
         - --service-account=health-admin
+        - --upgrade
         - --wait
       env:
         - name: "KUBECONFIG"
