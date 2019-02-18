@@ -9,6 +9,10 @@ spec:
     - name: targetNamespace
       description: Namespace in the target cluster we want to deploy to
       default: default
+    - name: useImageCache
+      description: Whether to Kaniko remotely cached layers and
+        locally cached base images.
+      default: "true"
   resources:
     - name: src
       type: git
@@ -27,6 +31,8 @@ spec:
     params:
       - name: pathToContext
         value: images/api
+      - name: useImageCache
+        value: "${params.useImageCache}"
     resources:
       inputs:
         - name: workspace
@@ -40,6 +46,8 @@ spec:
     params:
       - name: pathToContext
         value: images/frontend
+      - name: useImageCache
+        value: "${params.useImageCache}"
     resources:
       inputs:
         - name: workspace
@@ -53,6 +61,8 @@ spec:
     params:
       - name: pathToContext
         value: images/database
+      - name: useImageCache
+        value: "${params.useImageCache}"
     resources:
       inputs:
         - name: workspace

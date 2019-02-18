@@ -17,16 +17,29 @@ spec:
           (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts).
           The git clone directory is set by the GIT init container which setup the git input resource - see https://github.com/knative/build-pipeline/blob/master/pkg/reconciler/v1alpha1/taskrun/resources/pod.go#L107
         default: .
+      - name: useImageCache
+        description: Whether to Kaniko remotely cached layers and
+          locally cached base images.
+        default: "true"
   outputs:
     resources:
       - name: builtImage
         type: image
+  volumes:
+    - name: kaniko-base-image-cache
+      persistentVolumeClaim:
+        claimName: kaniko-base-image-cache
   steps:
     - name: build-and-push
       image: gcr.io/kaniko-project/executor
       command:
         - /kaniko/executor
       args:
+        - --cache=${inputs.params.useImageCache}
+        - --cache-dir=/cache
         - --dockerfile=${inputs.params.pathToDockerFile}
         - --destination=${outputs.resources.builtImage.url}
         - --context=/workspace/workspace/${inputs.params.pathToContext}
+      volumeMounts:
+        - name: kaniko-base-image-cache
+          mountPath: /cache
