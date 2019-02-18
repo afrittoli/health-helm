@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mkdir -p /var/run/uwsgi/
-mkdir -p /var/log/supervisor/
+mkdir -p /var/run/uwsgi
+mkdir -p /var/log/supervisor
 mkdir -p /var/log/nginx
 
 DB_URI="postgresql+psycopg2://$DB_USERNAME:$DB_PASSWORD@$DB_HOST/$DB_NAME"
