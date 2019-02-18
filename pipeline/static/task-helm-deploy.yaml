@@ -25,6 +25,9 @@ spec:
       - name: targetNamespace
         description: Namespace in the target cluster we want to deploy to
         default: "default"
+      - name: imageTag
+        description: Tag of the images to be used.
+        default: "default"
   steps:
     - name: helm-deploy
       image: alpine/helm
@@ -33,18 +36,16 @@ spec:
         - --debug
         - --install
         - --namespace=${inputs.params.targetNamespace}
-        # The image is always "latest" so we need to force / recreate-pods to ensure it's picked up
         - --force
         - --recreate-pods
         - health # Helm release name
         - /workspace/chart/${inputs.params.pathToHelmCharts}
-        # Latest version instead of ${inputs.resources.api-image.version} until #216
         - --set
-        - overrideApiImage=${inputs.resources.api-image.url}:latest
+        - overrideApiImage=${inputs.resources.api-image.url}:${inputs.params.imageTag}
         - --set
-        - overrideFrontendImage=${inputs.resources.frontend-image.url}:latest
+        - overrideFrontendImage=${inputs.resources.frontend-image.url}:${inputs.params.imageTag}
         - --set
-        - overrideDatabaseImage=${inputs.resources.database-image.url}:latest
+        - overrideDatabaseImage=${inputs.resources.database-image.url}:${inputs.params.imageTag}
         - --set
         - ingress.enabled=true
         - --set
