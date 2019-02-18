@@ -23,9 +23,9 @@ spec:
           name: health-database-image
       - name: target-cluster
         resourceRef:
-          name: af-pipelines
+          name: mycluster
     params:
       - name: pathToHelmCharts
         value: .
       - name: clusterIngressHost
-        value: af-pipelines.sjc03.containers.appdomain.cloud
+        value: mycluster.myzone.containers.appdomain.cloud
