@@ -15,17 +15,16 @@ RUN apt-get install -q -y nginx supervisor memcached
 RUN pip3 install --no-cache-dir -U psycopg2 uwsgi
 
 # Configuring nginx and uwsgi
-RUN rm -f /etc/nginx/sites-enabled/*; \
-    rm -f /etc/nginx/conf.d/default.conf; \
-    mkdir -p /etc/nginx/sites-enabled/; \
-    mkdir -p /var/run/uwsgi/; \
+RUN rm -f /etc/nginx/conf.d/default.conf; \
+    rm -rf /etc/nginx/sites-enabled; \
+    mkdir -p /etc/nginx/sites-enabled; \
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     ln -sf /dev/stderr /var/log/nginx/error.log; \
     echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Install openstack-health
 RUN git clone $HEALTH_GIT_REPO; \
-    cd openstack-health; git checkout $HEALTH_GIT_REF; cd ..;
+    cd openstack-health; git checkout $HEALTH_GIT_REF
 
 # Install requirements first to avoid reinstalling on code changes
 RUN pip3 install --no-cache-dir -r ./openstack-health/requirements.txt
@@ -41,6 +40,7 @@ COPY health-api.conf /etc/nginx/sites-available/health-api.conf
 COPY health-uwsgi-api.ini /etc/health-uwsgi-api.ini
 COPY openstack-health.conf /etc/openstack-health.conf
 
+# Enable Health Site and remove others
 RUN ln -s /etc/nginx/sites-available/health-api.conf /etc/nginx/sites-enabled/health-api.conf
 
 COPY run.sh /root/run.sh
