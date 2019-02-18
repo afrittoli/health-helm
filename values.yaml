@@ -2,13 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Only applicable
 replicaCount: 1
 
 health:
   storage:
     size: 50Gi
     class: "ibmc-file-silver"
-
 
 database:
   image:
@@ -31,6 +31,13 @@ image:
   repository: registry.ng.bluemix.net/ci-pipeline
   tag: stable
   pullPolicy: IfNotPresent
+
+# If knative is enabled, deploy the frontend as a kservice which
+# can scale down to zero. If both knative and ingress are enabled,
+# the account use to deploy will have to be able to write an
+# ingress.extension in the istio-system namespace.
+knative:
+  enabled: false
 
 # databaseImage: <registry>/ci-pipeline/database:tag
 # apiImage: <registry>/ci-pipeline/api:tag

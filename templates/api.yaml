@@ -25,8 +25,13 @@ roleRef:
   name: {{ template "health.fullname" . }}-services-reader
   apiGroup: rbac.authorization.k8s.io
 ---
+{{- if .Values.knative.enabled }}
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+{{- else }}
 apiVersion: apps/v1
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ template "health.fullname" . }}-api
   labels:
@@ -35,6 +40,13 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{- if .Values.knative.enabled }}
+  runLatest:
+    configuration:
+      revisionTemplate:  # template for building Revision
+        spec:
+          container:
+{{- else }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -48,39 +60,11 @@ spec:
     spec:
       containers:
         - name: {{ template "health.fullname" . }}-api
-          image: {{ template "health.api.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: DB_HOST
-              value: {{ template "health.fullname" . }}-postgres
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
-                  key: password
-            - name: DB_NAME
-              value: subunit2sql
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /status
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /status
-              port: http
-            initialDelaySeconds: 60
-            periodSeconds: 20
+{{- end }}
+{{- if .Values.knative.enabled -}}
+{{ include "health.api-container" . | nindent 12 }}
+{{- else }}
+{{ include "health.api-container" . | nindent 10 }}
 ---
 apiVersion: v1
 kind: Service
@@ -101,3 +85,4 @@ spec:
   selector:
     app: {{ template "health.name" . }}-api
     release: {{ .Release.Name }}
+{{- end }}

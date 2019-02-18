@@ -1,0 +1,44 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: istio-ingress-admin
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - "ingresses"
+  verbs: ["list", "get", "create", "update", "delete", "watch"]
+- apiGroups:
+  - "extensions"
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: istio-system
+  name: health-admin-istio-ingress-admin-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-ingress-admin
+subjects:
+- kind: ServiceAccount
+  name: health-admin
+  namespace: health
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: health
+  name: health-admin-istio-ingress-admin-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-ingress-admin
+subjects:
+- kind: ServiceAccount
+  name: health-admin
+  namespace: health

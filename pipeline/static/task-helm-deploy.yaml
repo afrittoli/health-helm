@@ -28,6 +28,9 @@ spec:
       - name: imageTag
         description: Tag of the images to be used.
         default: "default"
+      - name: useKnative
+        description: Deploy on k8s or Knative
+        default: "true"
   steps:
     - name: helm-deploy
       image: alpine/helm
@@ -52,6 +55,8 @@ spec:
         - ingress.host=${inputs.params.clusterIngressHost}
         - --set
         - image.pullPolicy=Always
+        - --set
+        - knative.enabled=${inputs.params.useKnative}
       env:
         - name: "KUBECONFIG"
           value: "/workspace/${inputs.resources.target-cluster.name}/kubeconfig"

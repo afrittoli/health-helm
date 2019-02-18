@@ -1,5 +1,10 @@
+{{- if .Values.knative.enabled }}
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+{{- else }}
 apiVersion: apps/v1
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ template "health.fullname" . }}-frontend
   labels:
@@ -8,6 +13,13 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{- if .Values.knative.enabled }}
+  runLatest:
+    configuration:
+      revisionTemplate:  # template for building Revision
+        spec:
+          container:
+{{- else }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -21,23 +33,11 @@ spec:
     spec:
       containers:
         - name: {{ template "health.fullname" . }}-api
-          image: {{ template "health.frontend.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: API_URL
-              value: {{ template "health.api.fullurl" . }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+{{- end }}
+{{- if .Values.knative.enabled -}}
+{{ include "health.frontend-container" . | nindent 12 }}
+{{- else }}
+{{ include "health.frontend-container" . | nindent 10 }}
 ---
 apiVersion: v1
 kind: Service
@@ -57,4 +57,5 @@ spec:
     protocol: TCP
   selector:
     app: {{ template "health.name" . }}-frontend
-    release: {{ .Release.Name }}
+release: {{ .Release.Name }}
+{{- end }}

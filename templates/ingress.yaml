@@ -1,4 +1,5 @@
 {{- if .Values.ingress.enabled }}
+{{- if not .Values.knative.enabled }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -23,4 +24,27 @@ spec:
            backend:
              serviceName: {{ template "health.fullname" . }}-frontend
              servicePort: 80
+{{- else }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: istio-system
+  name: {{ template "health.name" . }}-knative-ingress
+spec:
+  rules:
+    - host: {{ template "health.name" . }}-frontend.{{ .Release.Namespace }}.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: istio-ingressgateway
+              servicePort: 80
+    - host: {{ template "health.name" . }}-api.{{ .Release.Namespace }}.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: istio-ingressgateway
+              servicePort: 80
+{{- end }}
 {{- end }}

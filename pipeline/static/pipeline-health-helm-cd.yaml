@@ -16,6 +16,9 @@ spec:
     - name: imageTag
       description: Tag of the images to be used.
       default: "default"
+    - name: useKnative
+      description: Deploy on k8s or Knative
+      default: "true"
   resources:
     - name: src
       type: git
@@ -101,6 +104,8 @@ spec:
         value: "${params.targetNamespace}"
       - name: imageTag
         value: "${params.imageTag}"
+      - name: useKnative
+        value: "${params.useKnative}"
     resources:
       inputs:
         - name: chart

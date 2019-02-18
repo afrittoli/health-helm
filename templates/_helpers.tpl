@@ -63,6 +63,10 @@ API full URL for client access. We don't really handle the no-ingress case.
 */}}
 {{- define "health.api.fullurl" -}}
 {{- if .Values.ingress.enabled -}}
+{{- if .Values.knative.enabled -}}
+{{- printf "http://%s-api.%s.%s/" (include "health.name" .) .Release.Namespace .Values.ingress.host -}}
+{{- else -}}
 {{- printf "http://%s/%s-api" .Values.ingress.host .Release.Name -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
