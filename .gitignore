@@ -6,3 +6,4 @@ pipeline/run/*
 !pipeline/run/run-pipeline-health-helm-cd-demo.yaml
 !pipeline/run/run-task-helm-deploy-demo.yaml
 !pipeline/run/run-task-source-to-image-health-api-demo.yaml
+!pipeline/run/run_from_git.sh
