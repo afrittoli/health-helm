@@ -50,14 +50,10 @@ readinessProbe:
 {{- if not .Values.knative.enabled }}
     port: http
 {{- end }}
-  initialDelaySeconds: 5
-  periodSeconds: 5
 livenessProbe:
   httpGet:
     path: /status
 {{- if not .Values.knative.enabled }}
     port: http
 {{- end }}
-  initialDelaySeconds: 60
-  periodSeconds: 20
 {{- end -}}
