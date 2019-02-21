@@ -4,7 +4,7 @@
 ## Preconditions:
 # - The target cluster resource must be already defined
 
-# apiVersion: pipeline.knative.dev/v1alpha1
+# apiVersion: tekton.dev/v1alpha1
 # kind: PipelineResource
 # metadata:
 #   name: mycluster
@@ -47,7 +47,7 @@ declare -A IMAGE_RESOURCES
 ## Setup resources
 # GIT
 GIT_RESOURCE=$(cat <<EOF | kubectl create -o jsonpath='{.metadata.name}' -f -
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   generateName: health-helm-git-knative-
@@ -67,7 +67,7 @@ EOF
 # Images
 for IMG in api frontend database; do
   IMAGE_RESOURCES[$IMG]=$(cat <<EOF | kubectl create -o jsonpath='{.metadata.name}' -f -
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   generateName: health-$IMG-image-
@@ -86,7 +86,7 @@ done
 
 ## Setup the pipelinerun
 cat <<EOF | kubectl create -f -
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
   generateName: health-helm-cd-pr-

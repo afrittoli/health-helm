@@ -13,7 +13,7 @@ spec:
     requests:
       storage: 5Gi
 ---
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: kaniko-cache-base-images
