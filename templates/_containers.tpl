@@ -26,17 +26,19 @@ readinessProbe:
 image: {{ template "health.api.image" . }}
 imagePullPolicy: {{ .Values.image.pullPolicy }}
 env:
+  - name: DB_PROTOCOL
+    value: {{ if .Values.databaseOverride }}{{ default "postgresql+psycopg2" .Values.databaseOverride.protocol }}{{ else }}"postgresql+psycopg2"{{ end }}
   - name: DB_HOST
-    value: {{ template "health.fullname" . }}-postgres
+    value: {{ template "health.dbname" . }}
   - name: DB_USERNAME
     valueFrom:
       secretKeyRef:
-        name: {{ template "health.fullname" . }}-dbsecrets
+        name: {{ template "health.dbsecrets" . }}
         key: username
   - name: DB_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: {{ template "health.fullname" . }}-dbsecrets
+        name: {{ template "health.dbsecrets" . }}
         key: password
   - name: DB_NAME
     value: subunit2sql

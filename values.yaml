@@ -17,6 +17,16 @@ database:
   username: subunit2sql
   password: password
 
+# Support for an external DB. If specified, the PVC and DB
+# container and service are not provisioned at all. All three fields
+# are mandatory.
+# databaseOverride:
+#   host: <fqdn-db-host>
+#   ip: <db-service-ip>
+#   port: <db-service-port>
+#   secret: <name-of-a-secret-with-username-password>
+#   protocol: <db-connection-string-protocol>
+
 api:
   image:
     name: api

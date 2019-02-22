@@ -10,9 +10,9 @@ RUN apt-get update && apt-get install -q -y \
     build-essential musl-dev libxml2-dev git
 
 # Required apt packages
-RUN apt-get install -q -y nginx supervisor memcached
+RUN apt-get install -q -y nginx supervisor memcached default-libmysqlclient-dev
 # Required pip packages
-RUN pip3 install --no-cache-dir -U psycopg2 uwsgi
+RUN pip3 install --no-cache-dir -U psycopg2 uwsgi mysqlclient
 
 # Configuring nginx and uwsgi
 RUN rm -f /etc/nginx/conf.d/default.conf; \

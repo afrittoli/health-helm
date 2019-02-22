@@ -1,6 +1,0 @@
-ingress:
-  enabled: true
-  host: afhealth.sjc03.containers.appdomain.cloud
-overrideApiImage: registry.ng.bluemix.net/andreaf/health-api:latest
-overrideDatabaseImage: registry.ng.bluemix.net/andreaf/health-database:latest
-overrideFrontendImage: registry.ng.bluemix.net/andreaf/health-frontend:latest

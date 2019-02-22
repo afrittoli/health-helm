@@ -86,3 +86,21 @@ spec:
     app: {{ template "health.name" . }}-api
     release: {{ .Release.Name }}
 {{- end }}
+{{- if .Values.databaseOverride }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ template "health.name" . }}-database-external
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - {{ .Values.databaseOverride.host }}
+  addresses:
+  - {{ .Values.databaseOverride.ip }}
+  ports:
+  - name: tcp
+    number: {{ .Values.databaseOverride.port }}
+    protocol: tcp
+  location: MESH_EXTERNAL
+{{- end }}

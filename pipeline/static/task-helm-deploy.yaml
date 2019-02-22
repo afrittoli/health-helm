@@ -4,6 +4,12 @@ metadata:
   name: helm-deploy
 spec:
   serviceAccount: health-helm
+  volumes:
+    - name: helm-extra-values
+      configMap:
+        name: helm-extra-values
+    - name: values
+      emptyDir: {}
   inputs:
     resources:
       - name: chart
@@ -34,29 +40,25 @@ spec:
   steps:
     - name: helm-deploy
       image: alpine/helm
-      args:
-        - upgrade
-        - --debug
-        - --install
-        - --namespace=${inputs.params.targetNamespace}
-        - --force
-        - --recreate-pods
-        - health # Helm release name
-        - /workspace/chart/${inputs.params.pathToHelmCharts}
-        - --set
-        - overrideApiImage=${inputs.resources.api-image.url}:${inputs.params.imageTag}
-        - --set
-        - overrideFrontendImage=${inputs.resources.frontend-image.url}:${inputs.params.imageTag}
-        - --set
-        - overrideDatabaseImage=${inputs.resources.database-image.url}:${inputs.params.imageTag}
-        - --set
-        - ingress.enabled=true
-        - --set
-        - ingress.host=${inputs.params.clusterIngressHost}
-        - --set
-        - image.pullPolicy=Always
-        - --set
-        - knative.enabled=${inputs.params.useKnative}
+      command: ["/usr/bin/helm"]
+      args: ["upgrade", "--debug", "--install",
+             "--namespace=${inputs.params.targetNamespace}",
+             "--force", "--recreate-pods",
+             "health",
+             "/workspace/chart/${inputs.params.pathToHelmCharts}",
+             "--set", "overrideApiImage=${inputs.resources.api-image.url}:${inputs.params.imageTag}",
+             "--set", "overrideFrontendImage=${inputs.resources.frontend-image.url}:${inputs.params.imageTag}",
+             "--set", "overrideDatabaseImage=${inputs.resources.database-image.url}:${inputs.params.imageTag}",
+             "--set", "ingress.enabled=true",
+             "--set", "ingress.host=${inputs.params.clusterIngressHost}",
+             "--set", "image.pullPolicy=Always",
+             "--set", "knative.enabled=${inputs.params.useKnative}",
+             "-f", "/values/helm-values.yaml"]
+      volumeMounts:
+        - name: helm-extra-values
+          readOnly: true
+          mountPath: /values/helm-values.yaml
+          subPath: helm-values.yaml
       env:
         - name: "KUBECONFIG"
           value: "/workspace/${inputs.resources.target-cluster.name}/kubeconfig"

@@ -25,6 +25,34 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Create a full DB host name.
+If databaseOverride is set, the name is not trimmed because
+it's the name of an external service and it's not used to setup
+a database service / container.
+*/}}
+{{- define "health.dbname" -}}
+{{- if .Values.databaseOverride -}}
+{{- .Values.databaseOverride.host -}}
+{{- else -}}
+{{- printf "%s-postgres" (include "health.fullname" . ) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a full DB secrets name.
+If databaseOverride is set, the name is not trimmed because
+it's the name of an external service and it's not used to setup
+a database service / container.
+*/}}
+{{- define "health.dbsecrets" -}}
+{{- if .Values.databaseOverride -}}
+{{- .Values.databaseOverride.secret -}}
+{{- else -}}
+{{- printf "%s-dbsecrets" (include "health.fullname" . ) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "health.chart" -}}

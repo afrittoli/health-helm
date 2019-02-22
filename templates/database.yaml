@@ -1,8 +1,9 @@
+{{- if not .Values.databaseOverride }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ template "health.fullname" . }}-dbsecrets
+  name: {{ template "health.dbsecrets" . }}
 type: Opaque
 data:
   username: {{ .Values.database.username | b64enc }}
@@ -29,7 +30,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "health.fullname" . }}-postgres
+  name: {{ template "health.dbname" . }}
   labels:
     app: {{ template "health.name" . }}-postgres
     chart: {{ template "health.chart" . }}
@@ -59,12 +60,12 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
+                  name: {{ template "health.dbsecrets" . }}
                   key: password
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbsecrets
+                  name: {{ template "health.dbsecrets" . }}
                   key: username
             - name: PGDATA
               value: "/shared"
@@ -91,7 +92,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "health.fullname" . }}-postgres
+  name: {{ template "health.dbname" . }}
   labels:
     app: {{ template "health.name" . }}-postgres
     chart: {{ template "health.chart" . }}
@@ -107,3 +108,4 @@ spec:
   selector:
     app: {{ template "health.name" . }}-postgres
     release: {{ .Release.Name }}
+{{- end }}

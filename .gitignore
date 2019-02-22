@@ -1,5 +1,7 @@
 pipeline/accounts/cr-secret.yaml
 pipeline/accounts/*-secrets.yaml
+pipeline/accounts/resource*
+pipeline/accounts/account.json
 **/*-values.yaml
 pipeline/run/resource*
 pipeline/run/*
