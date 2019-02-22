@@ -41,6 +41,7 @@ spec:
         - --cache=${inputs.params.useImageCache}
         - --cache-dir=/cache
         - --dockerfile=${inputs.params.pathToDockerFile}
+        - --reproducible
         - --destination=${outputs.resources.builtImage.url}:${inputs.params.imageTag}
         - --context=/workspace/workspace/${inputs.params.pathToContext}
       volumeMounts:
