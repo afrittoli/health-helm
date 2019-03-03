@@ -8,8 +8,6 @@ spec:
     - name: helm-extra-values
       configMap:
         name: helm-extra-values
-    - name: values
-      emptyDir: {}
   inputs:
     resources:
       - name: chart

@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: helm-cleanup
+spec:
+  serviceAccount: health-helm
+  inputs:
+    resources:
+      - name: target-cluster
+        type: cluster
+    params:
+      - name: targetNamespace
+        description: Namespace in the target cluster we want to deploy to
+        default: "default"
+  steps:
+    - name: helm-deploy
+      image: alpine/helm
+      command: ["/usr/bin/helm"]
+      args: ["delete", "--purge", "health"]
+      env:
+        - name: "KUBECONFIG"
+          value: "/workspace/${inputs.resources.target-cluster.name}/kubeconfig"
+        - name: "TILLER_NAMESPACE"
+          value: "${inputs.params.targetNamespace}"
