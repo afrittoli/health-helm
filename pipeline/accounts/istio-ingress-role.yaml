@@ -42,3 +42,29 @@ subjects:
 - kind: ServiceAccount
   name: health-admin
   namespace: health
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: health
+  name: istio-service-entries-admin
+rules:
+- apiGroups:
+  - "networking.istio.io"
+  resources:
+  - "serviceentries"
+  verbs: ["list", "get", "create", "update", "delete", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: health
+  name: health-admin-istio-service-entries-admin-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: istio-service-entries-admin
+subjects:
+- kind: ServiceAccount
+  name: health-admin
+  namespace: health
